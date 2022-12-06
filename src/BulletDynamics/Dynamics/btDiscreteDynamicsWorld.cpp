@@ -958,7 +958,10 @@ void btDiscreteDynamicsWorld::integrateTransformsInternal(btRigidBody** bodies, 
 
 		if (body->isActive() && (!body->isStaticOrKinematicObject()))
 		{
-			body->predictIntegratedTransform(timeStep, predictedTrans);
+			if (m_constraintSolver->getSolverType() != BT_SMALL_STEP_PGS_SOLVER)
+			{
+				body->predictIntegratedTransform(timeStep, predictedTrans);
+			}
 
 			btScalar squareMotion = (predictedTrans.getOrigin() - body->getWorldTransform().getOrigin()).length2();
 

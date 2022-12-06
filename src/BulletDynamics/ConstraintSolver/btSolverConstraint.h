@@ -47,6 +47,8 @@ btSolverConstraint
 	btScalar m_jacDiagABInv;
 	btScalar m_rhs;
 	btScalar m_cfm;
+	btScalar m_erp;
+	btScalar m_targetVel;
 
 	btScalar m_lowerLimit;
 	btScalar m_upperLimit;

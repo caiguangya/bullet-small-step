@@ -280,6 +280,20 @@ btSolverBody
 			//m_originalBody->setCompanionId(-1);
 		}
 	}
+
+	void updateVelocityAndTransform(btScalar timeStep, btScalar splitImpulseTurnErp)
+	{
+		if (m_originalBody)
+		{
+			m_linearVelocity += m_deltaLinearVelocity + m_externalForceImpulse;
+			m_angularVelocity += m_deltaAngularVelocity + m_externalTorqueImpulse;
+
+			btTransform newTransform;
+			btTransformUtil::integrateTransform(m_worldTransform, m_linearVelocity + m_pushVelocity, 
+				m_angularVelocity + m_turnVelocity * splitImpulseTurnErp, timeStep, newTransform);
+			m_worldTransform = newTransform;
+		}
+	}
 };
 
 #endif  //BT_SOLVER_BODY_H
