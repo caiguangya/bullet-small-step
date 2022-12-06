@@ -483,7 +483,8 @@ void btDiscreteDynamicsWorld::internalSingleStepSimulation(btScalar timeStep)
 
 	///integrate transforms
 
-	integrateTransforms(timeStep);
+	if (m_constraintSolver->getSolverType() != BT_SMALL_STEP_PGS_SOLVER)
+		integrateTransforms(timeStep);
 
 	///update vehicle simulation
 	updateActions(timeStep);
@@ -958,10 +959,7 @@ void btDiscreteDynamicsWorld::integrateTransformsInternal(btRigidBody** bodies, 
 
 		if (body->isActive() && (!body->isStaticOrKinematicObject()))
 		{
-			if (m_constraintSolver->getSolverType() != BT_SMALL_STEP_PGS_SOLVER)
-			{
-				body->predictIntegratedTransform(timeStep, predictedTrans);
-			}
+			body->predictIntegratedTransform(timeStep, predictedTrans);
 
 			btScalar squareMotion = (predictedTrans.getOrigin() - body->getWorldTransform().getOrigin()).length2();
 
