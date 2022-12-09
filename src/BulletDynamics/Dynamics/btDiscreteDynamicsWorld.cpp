@@ -458,6 +458,8 @@ void btDiscreteDynamicsWorld::internalSingleStepSimulation(btScalar timeStep)
 		(*m_internalPreTickCallback)(this, timeStep);
 	}
 
+	storeNonStaticRigidBodyPostions();
+
 	///apply gravity, predict motion
 	predictUnconstraintMotion(timeStep);
 
@@ -482,9 +484,7 @@ void btDiscreteDynamicsWorld::internalSingleStepSimulation(btScalar timeStep)
 	///CallbackTriggers();
 
 	///integrate transforms
-
-	if (m_constraintSolver->getSolverType() != BT_SMALL_STEP_PGS_SOLVER)
-		integrateTransforms(timeStep);
+	integrateTransforms(timeStep);
 
 	///update vehicle simulation
 	updateActions(timeStep);
@@ -532,6 +532,7 @@ void btDiscreteDynamicsWorld::removeCollisionObject(btCollisionObject* collision
 void btDiscreteDynamicsWorld::removeRigidBody(btRigidBody* body)
 {
 	m_nonStaticRigidBodies.remove(body);
+	m_nonStaticRbTransforms.erase(body);
 	btCollisionWorld::removeCollisionObject(body);
 }
 
@@ -547,6 +548,7 @@ void btDiscreteDynamicsWorld::addRigidBody(btRigidBody* body)
 		if (!body->isStaticObject())
 		{
 			m_nonStaticRigidBodies.push_back(body);
+			m_nonStaticRbTransforms.emplace(body, body->getWorldTransform());
 		}
 		else
 		{
@@ -573,6 +575,7 @@ void btDiscreteDynamicsWorld::addRigidBody(btRigidBody* body, int group, int mas
 		if (!body->isStaticObject())
 		{
 			m_nonStaticRigidBodies.push_back(body);
+			m_nonStaticRbTransforms.emplace(body, body->getWorldTransform());
 		}
 		else
 		{
@@ -959,7 +962,15 @@ void btDiscreteDynamicsWorld::integrateTransformsInternal(btRigidBody** bodies, 
 
 		if (body->isActive() && (!body->isStaticOrKinematicObject()))
 		{
-			body->predictIntegratedTransform(timeStep, predictedTrans);
+			if (m_constraintSolver->getSolverType() != BT_SMALL_STEP_PGS_SOLVER)
+			{
+				body->predictIntegratedTransform(timeStep, predictedTrans);
+			}
+			else
+			{
+				predictedTrans = body->getWorldTransform();
+				body->setWorldTransform(m_nonStaticRbTransforms[body]);
+			}
 
 			btScalar squareMotion = (predictedTrans.getOrigin() - body->getWorldTransform().getOrigin()).length2();
 
@@ -1004,7 +1015,8 @@ void btDiscreteDynamicsWorld::integrateTransformsInternal(btRigidBody** bodies, 
 					{
 						//printf("clamped integration to hit fraction = %f\n",fraction);
 						body->setHitFraction(sweepResults.m_closestHitFraction);
-						body->predictIntegratedTransform(timeStep * body->getHitFraction(), predictedTrans);
+						predictedTrans.setOrigin(lerp(body->getWorldTransform().getOrigin(), predictedTrans.getOrigin(), body->getHitFraction()));
+						predictedTrans.setRotation(slerp(body->getWorldTransform().getRotation(), predictedTrans.getRotation(), body->getHitFraction()));
 						body->setHitFraction(0.f);
 						body->proceedToTransform(predictedTrans);
 
@@ -1467,4 +1479,12 @@ void btDiscreteDynamicsWorld::serialize(btSerializer* serializer)
 	serializeContactManifolds(serializer);
 
 	serializer->finishSerialization();
+}
+
+void btDiscreteDynamicsWorld::storeNonStaticRigidBodyPostions()
+{
+	for (auto& rbTransformPair : m_nonStaticRbTransforms)
+	{
+		rbTransformPair.second = rbTransformPair.first->getWorldTransform();
+	}
 }

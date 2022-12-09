@@ -70,6 +70,7 @@ struct btContactSolverInfoData
 	bool m_jointFeedbackInJointFrame;
 	int m_reportSolverAnalytics;
 	int m_numNonContactInnerIterations;
+	btScalar m_maxContactConstraintStablizationSpeed;
 };
 
 struct btContactSolverInfo : public btContactSolverInfoData
@@ -110,6 +111,7 @@ struct btContactSolverInfo : public btContactSolverInfoData
 		m_jointFeedbackInJointFrame = false;
 		m_reportSolverAnalytics = 0;
 		m_numNonContactInnerIterations = 1;   // the number of inner iterations for solving motor constraint in a single iteration of the constraint solve
+		m_maxContactConstraintStablizationSpeed = 10;
 	}
 };
 

@@ -289,8 +289,8 @@ btSolverBody
 			m_angularVelocity += m_deltaAngularVelocity + m_externalTorqueImpulse;
 
 			btTransform newTransform;
-			btTransformUtil::integrateTransform(m_worldTransform, m_linearVelocity + m_pushVelocity, 
-				m_angularVelocity + m_turnVelocity * splitImpulseTurnErp, timeStep, newTransform);
+			btTransformUtil::integrateTransform(m_worldTransform, m_linearVelocity, 
+				m_angularVelocity, timeStep, newTransform);
 			m_worldTransform = newTransform;
 		}
 	}

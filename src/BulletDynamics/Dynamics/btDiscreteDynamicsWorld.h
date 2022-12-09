@@ -31,6 +31,8 @@ struct InplaceSolverIslandCallback;
 #include "LinearMath/btAlignedObjectArray.h"
 #include "LinearMath/btThreads.h"
 
+#include <unordered_map>
+
 ///btDiscreteDynamicsWorld provides discrete rigid body simulation
 ///those classes replace the obsolete CcdPhysicsEnvironment/CcdPhysicsController
 ATTRIBUTE_ALIGNED16(class)
@@ -47,6 +49,8 @@ protected:
 	btAlignedObjectArray<btTypedConstraint*> m_constraints;
 
 	btAlignedObjectArray<btRigidBody*> m_nonStaticRigidBodies;
+
+	std::unordered_map<btRigidBody*, btTransform> m_nonStaticRbTransforms;
 
 	btVector3 m_gravity;
 
@@ -68,6 +72,8 @@ protected:
 
 	btAlignedObjectArray<btPersistentManifold*> m_predictiveManifolds;
 	btSpinMutex m_predictiveManifoldsMutex;  // used to synchronize threads creating predictive contacts
+
+	void storeNonStaticRigidBodyPostions();
 
 	virtual void predictUnconstraintMotion(btScalar timeStep);
 
