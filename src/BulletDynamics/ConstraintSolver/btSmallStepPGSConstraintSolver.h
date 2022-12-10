@@ -4,8 +4,7 @@
 #include "btSequentialImpulseConstraintSolver.h"
 #include "LinearMath/btThreads.h"
 
-ATTRIBUTE_ALIGNED16(class)
-btSmallStepPGSConstraintSolver : public btSequentialImpulseConstraintSolver
+class btSmallStepPGSConstraintSolver : public btSequentialImpulseConstraintSolver
 {
 protected:
 	btScalar m_subTimeStep;
@@ -50,7 +49,6 @@ protected:
 	void applySplitImpulses(int iBegin, int iEnd, btScalar timeStep, const btContactSolverInfo& infoGlobal);
 
 public:
-	BT_DECLARE_ALIGNED_ALLOCATOR();
 
 	btSmallStepPGSConstraintSolver() : btSequentialImpulseConstraintSolver(), m_subTimeStep(0), m_invSubTimeStep(0) {}
 

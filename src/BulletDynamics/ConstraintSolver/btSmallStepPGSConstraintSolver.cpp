@@ -50,7 +50,7 @@ btScalar btSmallStepPGSConstraintSolver::solveGroupCacheFriendlyIterations(btCol
 			solveSingleIteration(iteration, bodies, numBodies, manifoldPtr, numManifolds, constraints, numConstraints, infoGlobal, debugDrawer);
 			integrateBodies(0, m_tmpSolverBodyPool.size(), m_subTimeStep, infoGlobal);
 
-			updateJointsFeedback(0, m_tmpConstraintSizesPool.size(), infoGlobal);
+			updateJointsFeedback(0, m_tmpSolverNonContactConstraintPool.size(), infoGlobal);
 		}
 	}
 
@@ -365,7 +365,7 @@ void btSmallStepPGSConstraintSolver::setupContactConstraint(btSolverConstraint& 
 	///warm starting (or zero if disabled)
 	if (infoGlobal.m_solverMode & SOLVER_USE_WARMSTARTING)
 	{
-		solverConstraint.m_appliedImpulse = cp.m_appliedImpulse * infoGlobal.m_warmstartingFactor;
+		solverConstraint.m_appliedImpulse = cp.m_appliedImpulse * infoGlobal.m_warmstartingFactor / infoGlobal.m_numIterations;
 		if (rb0)
 			bodyA->internalApplyImpulse(solverConstraint.m_contactNormal1 * bodyA->internalGetInvMass(), solverConstraint.m_angularComponentA, solverConstraint.m_appliedImpulse);
 		if (rb1)
@@ -591,21 +591,23 @@ void btSmallStepPGSConstraintSolver::convertBodies(btCollisionObject** bodies, i
 void btSmallStepPGSConstraintSolver::updateConstraints(int iteration, btCollisionObject** bodies, int numBodies, btPersistentManifold** manifoldPtr, int numManifolds, btTypedConstraint** constraints, int numConstraints, const btContactSolverInfo& infoGlobal, btIDebugDraw* debugDrawer)
 {
 	{
-		btTypedConstraint::btConstraintInfo1 tmp_info;
+		//btTypedConstraint::btConstraintInfo1 tmp_info;
 		int currentRow = 0;
 		for (int i = 0; i < numConstraints; i++)
 		{
-			const btTypedConstraint::btConstraintInfo1& info1 = m_tmpConstraintSizesPool[i];
-			btSolverConstraint* currentConstraintRow = &m_tmpSolverNonContactConstraintPool[currentRow];
+			btTypedConstraint::btConstraintInfo1& info1 = m_tmpConstraintSizesPool[i];
 
-			btTypedConstraint* constraint = constraints[i];
+			if (info1.m_numConstraintRows)
+			{
+				btSolverConstraint* currentConstraintRow = &m_tmpSolverNonContactConstraintPool[currentRow];
 
-			constraint->getInfo1(&tmp_info);
+				btTypedConstraint* constraint = constraints[i];
 
-			int solverBodyIdA = currentConstraintRow->m_solverBodyIdA;
-			int solverBodyIdB = currentConstraintRow->m_solverBodyIdB;
+				int solverBodyIdA = currentConstraintRow->m_solverBodyIdA;
+				int solverBodyIdB = currentConstraintRow->m_solverBodyIdB;
 
-			updateJoint(iteration, currentConstraintRow, constraint, info1, solverBodyIdA, solverBodyIdB, infoGlobal);
+				updateJoint(iteration, currentConstraintRow, constraint, info1, solverBodyIdA, solverBodyIdB, infoGlobal);
+			}
 
 			currentRow += info1.m_numConstraintRows;
 		}
