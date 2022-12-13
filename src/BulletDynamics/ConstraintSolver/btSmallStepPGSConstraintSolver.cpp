@@ -359,20 +359,7 @@ void btSmallStepPGSConstraintSolver::setupContactConstraint(btSolverConstraint& 
 		};
 	}
 
-	///warm starting (or zero if disabled)
-	if (infoGlobal.m_solverMode & SOLVER_USE_WARMSTARTING)
-	{
-		solverConstraint.m_appliedImpulse = cp.m_appliedImpulse * infoGlobal.m_warmstartingFactor / infoGlobal.m_numIterations;
-		if (rb0)
-			bodyA->internalApplyImpulse(solverConstraint.m_contactNormal1 * bodyA->internalGetInvMass(), solverConstraint.m_angularComponentA, solverConstraint.m_appliedImpulse);
-		if (rb1)
-			bodyB->internalApplyImpulse(-solverConstraint.m_contactNormal2 * bodyB->internalGetInvMass(), -solverConstraint.m_angularComponentB, -(btScalar)solverConstraint.m_appliedImpulse);
-	}
-	else
-	{
-		solverConstraint.m_appliedImpulse = 0.f;
-	}
-
+	solverConstraint.m_appliedImpulse = 0.f;
 	solverConstraint.m_appliedPushImpulse = 0.f;
 
 	{
@@ -779,8 +766,8 @@ void btSmallStepPGSConstraintSolver::updateContact(int iteration, btSolverConstr
 
 	if (infoGlobal.m_solverMode & SOLVER_USE_2_FRICTION_DIRECTIONS)
 	{
-		frictionConstraint = m_tmpSolverContactFrictionConstraintPool[solverConstraint.m_frictionIndex + 1];
-		updateFrictionConstraint(iteration, frictionConstraint,
+		btSolverConstraint& frictionConstraint2 = m_tmpSolverContactFrictionConstraintPool[solverConstraint.m_frictionIndex + 1];
+		updateFrictionConstraint(iteration, frictionConstraint2,
 								 solverBodyIdA, solverBodyIdB, *cp, rel_pos1, rel_pos2, infoGlobal.m_sor, infoGlobal);
 	}
 }
