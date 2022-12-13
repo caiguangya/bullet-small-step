@@ -285,8 +285,8 @@ btSolverBody
 	{
 		if (m_originalBody)
 		{
-			m_linearVelocity += m_deltaLinearVelocity + m_externalForceImpulse;
-			m_angularVelocity += m_deltaAngularVelocity + m_externalTorqueImpulse;
+			m_linearVelocity += m_deltaLinearVelocity;
+			m_angularVelocity += m_deltaAngularVelocity;
 
 			btTransform newTransform;
 			btTransformUtil::integrateTransform(m_worldTransform, m_linearVelocity, 
