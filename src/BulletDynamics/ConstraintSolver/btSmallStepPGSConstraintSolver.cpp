@@ -907,6 +907,7 @@ void btSmallStepPGSConstraintSolver::applySplitImpulses(int iBegin, int iEnd, bt
 
 			solverBody.m_worldTransform = newTransform;
 			body->setWorldTransform(newTransform);
+			body->updateInertiaTensor();
 		}
 
 		solverBody.m_pushVelocity.setZero();
