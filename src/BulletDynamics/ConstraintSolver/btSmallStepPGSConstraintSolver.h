@@ -10,6 +10,8 @@ protected:
 	btScalar m_subTimeStep;
 	btScalar m_invSubTimeStep;
 
+	btAlignedObjectArray<btScalar> m_tmpNonContactConstraintsPreAppliedImpulse;
+
 	virtual btScalar solveGroupCacheFriendlySetup(btCollisionObject * *bodies, int numBodies, btPersistentManifold** manifoldPtr, int numManifolds, btTypedConstraint** constraints, int numConstraints, const btContactSolverInfo& infoGlobal, btIDebugDraw* debugDrawer) BT_OVERRIDE;
 	virtual btScalar solveGroupCacheFriendlyIterations(btCollisionObject * *bodies, int numBodies, btPersistentManifold** manifoldPtr, int numManifolds, btTypedConstraint** constraints, int numConstraints, const btContactSolverInfo& infoGlobal, btIDebugDraw* debugDrawer) BT_OVERRIDE;
 	virtual btScalar solveGroupCacheFriendlyFinish(btCollisionObject * *bodies, int numBodies, const btContactSolverInfo& infoGlobal) BT_OVERRIDE;
@@ -40,8 +42,6 @@ protected:
         btScalar relaxation, const btContactSolverInfo& infoGlobal);
 
 	void integrateBodies(int iBegin, int iEnd, btScalar timeStep, const btContactSolverInfo& infoGlobal);
-
-	btScalar solveSingleSplitImpuseIteration(int iteration, btCollisionObject** bodies, int numBodies, btPersistentManifold** manifoldPtr, int numManifolds, btTypedConstraint** constraints, int numConstraints, const btContactSolverInfo& infoGlobal, btIDebugDraw* debugDrawer);
 
 	void writeBackJoints(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
 	void updateJointsFeedback(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
