@@ -281,7 +281,7 @@ btSolverBody
 		}
 	}
 
-	void updateVelocityAndTransform(btScalar timeStep, btScalar splitImpulseTurnErp)
+	void updateVelocityAndTransform(btScalar timeStep)
 	{
 		if (m_originalBody)
 		{

@@ -43,7 +43,7 @@ btScalar btSmallStepPGSConstraintSolver::solveGroupCacheFriendlyIterations(btCol
 		int maxIterations = infoGlobal.m_numIterations;
 		for (int iteration = 0; iteration < maxIterations; iteration++)
 		{
-			applyExternalImpules(0, m_tmpSolverBodyPool.size(), infoGlobal);
+			applyExternalImpulses(0, m_tmpSolverBodyPool.size(), infoGlobal);
 
 			updateConstraints(iteration, bodies, numBodies, manifoldPtr, numManifolds, constraints, numConstraints, infoGlobal, debugDrawer);
 			solveSingleIteration(iteration, bodies, numBodies, manifoldPtr, numManifolds, constraints, numConstraints, infoGlobal, debugDrawer);
@@ -840,7 +840,7 @@ void btSmallStepPGSConstraintSolver::integrateBodies(int iBegin, int iEnd, btSca
 		{
 			btTransform originalTransform = solverBody.m_worldTransform;
 
-			solverBody.updateVelocityAndTransform(timeStep, infoGlobal.m_splitImpulseTurnErp);
+			solverBody.updateVelocityAndTransform(timeStep);
 
 			body->setLinearVelocity(solverBody.m_linearVelocity);
 			body->setAngularVelocity(solverBody.m_angularVelocity);
@@ -879,11 +879,12 @@ void btSmallStepPGSConstraintSolver::updateJointsFeedback(int iBegin, int iEnd, 
 		if (fb)
 		{
 			btScalar deltaImpulse = solverConstr.m_appliedImpulse - preAppliedImpulse;
+			btScalar deltaForce = deltaImpulse * m_invSubTimeStep;
 
-			fb->m_appliedForceBodyA += solverConstr.m_contactNormal1 * constr->getRigidBodyA().getLinearFactor() * deltaImpulse * m_invSubTimeStep;
-			fb->m_appliedForceBodyB += solverConstr.m_contactNormal2 * constr->getRigidBodyB().getLinearFactor() * deltaImpulse * m_invSubTimeStep;
-			fb->m_appliedTorqueBodyA += solverConstr.m_relpos1CrossNormal * constr->getRigidBodyA().getAngularFactor() * deltaImpulse * m_invSubTimeStep;
-			fb->m_appliedTorqueBodyB += solverConstr.m_relpos2CrossNormal * constr->getRigidBodyB().getAngularFactor() * deltaImpulse * m_invSubTimeStep; /*RGM ???? */
+			fb->m_appliedForceBodyA += solverConstr.m_contactNormal1 * constr->getRigidBodyA().getLinearFactor() * deltaForce;
+			fb->m_appliedForceBodyB += solverConstr.m_contactNormal2 * constr->getRigidBodyB().getLinearFactor() * deltaForce;
+			fb->m_appliedTorqueBodyA += solverConstr.m_relpos1CrossNormal * constr->getRigidBodyA().getAngularFactor() * deltaForce;
+			fb->m_appliedTorqueBodyB += solverConstr.m_relpos2CrossNormal * constr->getRigidBodyB().getAngularFactor() * deltaForce; /*RGM ???? */
 		}
 		m_tmpNonContactConstraintsPreAppliedImpulse[j] = solverConstr.m_appliedImpulse;
 	}
@@ -913,7 +914,7 @@ void btSmallStepPGSConstraintSolver::applySplitImpulses(int iBegin, int iEnd, bt
 	}
 }
 
-void btSmallStepPGSConstraintSolver::applyExternalImpules(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal)
+void btSmallStepPGSConstraintSolver::applyExternalImpulses(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal)
 {
 	for (int i = iBegin; i < iEnd; i++)
 	{

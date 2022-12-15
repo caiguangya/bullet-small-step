@@ -47,7 +47,7 @@ protected:
 	void updateJointsFeedback(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
 
 	void applySplitImpulses(int iBegin, int iEnd, btScalar timeStep, const btContactSolverInfo& infoGlobal);
-	void applyExternalImpules(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
+	void applyExternalImpulses(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
 
 	void writeBackBodies(int iBegin, int iEnd, const btContactSolverInfo& infoGlobal);
 
