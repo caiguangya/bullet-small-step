@@ -1,5 +1,5 @@
-#ifndef BT_SMALLSTEPPCG_CONSTRAINT_SOLVER_H
-#define BT_SMALLSTEPPCG_CONSTRAINT_SOLVER_H
+#ifndef BT_SMALLSTEPPGS_CONSTRAINT_SOLVER_H
+#define BT_SMALLSTEPPGS_CONSTRAINT_SOLVER_H
 
 #include "btSequentialImpulseConstraintSolver.h"
 #include "LinearMath/btThreads.h"
