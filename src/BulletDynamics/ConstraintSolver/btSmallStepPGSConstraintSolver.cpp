@@ -923,23 +923,23 @@ void btSmallStepPGSConstraintSolver::applyExternalImpulses(int iBegin, int iEnd,
 		btRigidBody* body = solverBody.m_originalBody;
 		if (body)
 		{
-			btVector3 gyroImpluse(0, 0, 0);
+			solverBody.m_externalTorqueImpulse = body->getTotalTorque() * body->getInvInertiaTensorWorld() * m_subTimeStep;
 			if (body->getFlags() & BT_ENABLE_GYROSCOPIC_FORCE_EXPLICIT)
 			{
 				btVector3 gyroForce = body->computeGyroscopicForceExplicit(infoGlobal.m_maxGyroscopicForce);
-				gyroImpluse = gyroForce * body->getInvInertiaTensorWorld() * -m_subTimeStep;
+				solverBody.m_externalTorqueImpulse -= gyroForce * body->getInvInertiaTensorWorld() * m_subTimeStep;
 			}
 			else if (body->getFlags() & BT_ENABLE_GYROSCOPIC_FORCE_IMPLICIT_WORLD)
 			{
-				gyroImpluse = body->computeGyroscopicImpulseImplicit_World(m_subTimeStep);
+				solverBody.m_externalTorqueImpulse += body->computeGyroscopicImpulseImplicit_World(m_subTimeStep);
 			}
 			else if (body->getFlags() & BT_ENABLE_GYROSCOPIC_FORCE_IMPLICIT_BODY)
 			{
-				gyroImpluse = body->computeGyroscopicImpulseImplicit_Body(m_subTimeStep);
+				solverBody.m_externalTorqueImpulse += body->computeGyroscopicImpulseImplicit_Body(m_subTimeStep);
 			}
 
 			solverBody.m_linearVelocity += solverBody.m_externalForceImpulse;
-			solverBody.m_angularVelocity += solverBody.m_externalTorqueImpulse + gyroImpluse;
+			solverBody.m_angularVelocity += solverBody.m_externalTorqueImpulse;
 		}
 	}
 }
