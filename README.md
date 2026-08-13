@@ -17,4 +17,4 @@ The solver divides each timestep into multiple smaller substeps and performs one
 ## Results and references
 The solver is validated on scenes with 200:1 mass ratios (suspended chain, heavy box stack), where standard PGS fails to converge even at high iteration counts.
 
-See the technical report for more detials: [*Solving rigid body constraints with a small step solver*](docs/technical-report.pdf).
+See the technical report for more details: [*Solving rigid body constraints with a small step solver*](docs/technical-report.pdf).
