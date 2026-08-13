@@ -1,5 +1,5 @@
 # Small Step PGS Solver for Bullet Physics
-This repository extends Bullet Physics with a small step Projected Gauss-Seidel (PGS) constraint solver for rigid-body simulation.
+This repository extends Bullet Physics with a small step Projected Gauss-Seidel (PGS) constraint solver for rigid body simulation.
 
 The solver divides each timestep into multiple smaller substeps and performs one PGS iteration per substep. This improves constraint convergence, particularly for simulations with large mass ratios.
 
@@ -10,7 +10,12 @@ The solver divides each timestep into multiple smaller substeps and performs one
 
 * Baumgarte stabilization tuning: Adds `m_maxContactConstraintStablizationSpeed` to cap stabilization impulses and mitigate energy injection instabilities inherent to small-stepping.
 
+* Pre-stabilization: Applies position-based constraint stabilization before solver execution to reduce deep penetrations and limit subsequent Baumgarte energy injection.
+
 * DiscreteDynamicsWorld integration: Adjusts motion prediction and transform handling to support the solver's substepped integration model.
 
 ## Results and references
-See the technical report: [*Solving rigid body constraints with a small step solver*](docs/technical-report.pdf).
+The solver is validated on scenes with 200:1 mass ratios (suspended chain, heavy box stack), where standard PGS fails to converge even at high iteration counts.
+
+See the technical report for more detials: [*Solving rigid body constraints with a small step solver*](docs/technical-report.pdf).
+
